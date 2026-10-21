@@ -2,6 +2,9 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const { openDb } = require('../src/db');
 const { Room } = require('../src/room');
 const { cleanQuestion, cleanName } = require('../src/sanitize');
@@ -25,6 +28,35 @@ test('la banque est importée au premier lancement seulement', () => {
   const hard = db.activeQuestions().filter((q) => q.hard);
   assert.ok(hard.length >= 50);
   assert.ok(db.activeQuestions().every((q) => q.text.endsWith(' ?')));
+});
+
+test('le thème +18 ne sort que si l’hôte le coche', () => {
+  const { room } = setup(4, { count: 20, themes: ['Vie perso'] });
+  room.start(room.byPid(room.hostPid).token);
+  assert.ok(room.deck.every((q) => q.theme === 'Vie perso'));
+
+  const adult = setup(4, { count: 20, themes: ['+18'] });
+  adult.room.start(adult.host);
+  assert.equal(adult.room.deck.length, 20);
+  assert.ok(adult.room.deck.every((q) => q.theme === '+18'));
+});
+
+test('import : la base suit le JSON, ajouts et retraits', (t) => {
+  const db = openDb(':memory:');
+  db.seedIfEmpty();
+  const before = db.activeQuestions().length;
+  const bank = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/questions.json'), 'utf8'));
+  const dropped = bank.themes.Food.shift();
+  bank.hard.push({ text: 'tester une nouvelle question ?', title: 'Testeur' });
+  const file = path.join(os.tmpdir(), `questions-${process.pid}.json`);
+  fs.writeFileSync(file, JSON.stringify(bank));
+  t.after(() => fs.rmSync(file, { force: true }));
+
+  assert.deepEqual(db.importQuestions(file), { added: 1, removed: 1 });
+  const active = db.activeQuestions();
+  assert.equal(active.length, before);
+  assert.ok(!active.some((q) => q.text.startsWith(dropped.text.replace(/ ?$/, ''))));
+  assert.deepEqual(db.importQuestions(file), { added: 0, removed: 0 });
 });
 
 test('nettoyage des textes joueurs', () => {

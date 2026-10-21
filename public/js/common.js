@@ -53,8 +53,9 @@
 
   function settingsSummary(s) {
     const time = s.timer ? s.timer + ' secondes pour voter' : 'temps de vote illimité';
-    if (s.hard) return 'Mode Hard · sans limite · ' + time;
-    return s.count + ' questions · ' + time;
+    const adult = s.themes.includes('+18') ? 'Questions +18 · ' : '';
+    if (s.hard) return adult + 'Mode Hard · sans limite · ' + time;
+    return adult + s.count + ' questions · ' + time;
   }
 
   function roundLabel(round) {

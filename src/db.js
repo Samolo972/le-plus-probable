@@ -91,6 +91,8 @@ function openDb(file = DEFAULT_FILE) {
       'INSERT OR IGNORE INTO questions (text, theme, title, hard) VALUES (@text, @theme, @title, @hard)'
     ),
     questionsActive: db.prepare('SELECT id, text, theme, title, hard FROM questions WHERE active = 1'),
+    questionTexts: db.prepare('SELECT id, text FROM questions WHERE active = 1'),
+    disableQuestion: db.prepare('UPDATE questions SET active = 0 WHERE id = ?'),
 
     insertCustom: db.prepare('INSERT OR IGNORE INTO custom_questions (text, created_at) VALUES (?, ?)'),
     customId: db.prepare('SELECT id FROM custom_questions WHERE text = ?'),
@@ -136,24 +138,33 @@ function openDb(file = DEFAULT_FILE) {
   const api = {
     raw: db,
 
+    // Synchronise la banque avec le JSON : ajoute les nouvelles questions et désactive
+    // celles qui n'y figurent plus. Une question désactivée à la main le reste.
     importQuestions(file = QUESTIONS_JSON) {
       const bank = JSON.parse(fs.readFileSync(file, 'utf8'));
       // Le JSON s'écrit avec une espace simple avant « ? », l'affichage veut une insécable.
       const text = (t) => t.trim().replace(/\s*\?$/, ' ?');
       let added = 0;
+      let removed = 0;
       const run = db.transaction(() => {
-        for (const [theme, list] of Object.entries(bank.themes)) {
-          for (const q of list) added += st.insertQuestion.run({ text: text(q.text), theme, title: q.title, hard: 0 }).changes;
+        const keep = new Set();
+        const insert = (q, theme, hard) => {
+          keep.add(text(q.text));
+          added += st.insertQuestion.run({ text: text(q.text), theme, title: q.title, hard }).changes;
+        };
+        for (const [theme, list] of Object.entries(bank.themes)) for (const q of list) insert(q, theme, 0);
+        for (const q of bank.hard) insert(q, 'hard', 1);
+        for (const q of st.questionTexts.all()) {
+          if (!keep.has(q.text)) removed += st.disableQuestion.run(q.id).changes;
         }
-        for (const q of bank.hard) added += st.insertQuestion.run({ text: text(q.text), theme: 'hard', title: q.title, hard: 1 }).changes;
       });
       run();
-      return added;
+      return { added, removed };
     },
 
     // Import uniquement au premier lancement : ensuite la base fait foi.
     seedIfEmpty() {
-      if (st.countQuestions.get().n === 0) return api.importQuestions();
+      if (st.countQuestions.get().n === 0) return api.importQuestions().added;
       return 0;
     },
 

@@ -36,7 +36,8 @@ Variables d'environnement : `PORT` (3002), `HOST` (127.0.0.1), `PUBLIC_URL` (adr
 ## Questions
 
 `data/questions.json` n'est lu qu'au premier lancement (base vide). Ensuite la base fait foi :
-- ajouter des questions : les écrire dans le JSON puis `npm run import-questions` (les doublons sont ignorés) ;
+- modifier la banque : éditer le JSON puis `npm run import-questions`, qui ajoute les nouvelles questions
+  et désactive celles retirées du fichier ;
 - retirer une question : `UPDATE questions SET active = 0 WHERE id = …` (idem dans `custom_questions`
   pour une question proposée par un joueur).
 

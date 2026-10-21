@@ -7,7 +7,7 @@
   const FX = window.FX;
 
   const SUSPENSE_MS = 2600;
-  const THEMES = ['Vie au bureau', 'Absurde', 'Food', 'Voyages', 'Soirées', 'Ados à jamais'];
+  const THEMES = ['Vie perso', 'Absurde', 'Food', 'Voyages', 'Soirées', 'Ados à jamais', '+18'];
   const OPTIONS = [
     { key: 'anon', label: 'Vote anonyme', hint: 'Personne ne sait qui a voté quoi' },
     { key: 'self', label: 'Voter pour soi-même', hint: 'Autoriser l’autodérision' },
@@ -337,6 +337,8 @@
         });
       })
     );
+
+    show($('themes-adult'), d.themes.includes('+18'));
 
     fill($('options'), OPTIONS.map((o) => [d[o.key], o.key === 'reveal' && d.anon]), () =>
       OPTIONS.map((o) => {

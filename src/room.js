@@ -19,7 +19,7 @@ const TIMERS = [10, 20, 30, 0]; // 0 = illimité
 const DEFAULT_SETTINGS = {
   count: 10,
   timer: 20,
-  themes: ['Vie au bureau', 'Absurde', 'Food'],
+  themes: ['Vie perso', 'Absurde', 'Food'],
   anon: true,
   self: false,
   reveal: false,

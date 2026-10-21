@@ -2,7 +2,7 @@
 
 const { randomInt } = require('node:crypto');
 
-const THEMES = ['Vie au bureau', 'Absurde', 'Food', 'Voyages', 'Soirées', 'Ados à jamais'];
+const THEMES = ['Vie perso', 'Absurde', 'Food', 'Voyages', 'Soirées', 'Ados à jamais', '+18'];
 
 // Titre donné au gagnant d'une question proposée par un joueur.
 const CUSTOM_TITLES = [
