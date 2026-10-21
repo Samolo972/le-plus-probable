@@ -1,0 +1,37 @@
+{
+  "name": "plusprobable",
+  "version": "1.0.0",
+  "description": "Le Plus Probable : jeu multijoueur entre collègues, à jouer depuis le téléphone",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test test/*.test.js",
+    "import-questions": "node scripts/import-questions.js",
+    "backup": "node scripts/backup.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Samolo972/le-plus-probable.git"
+  },
+  "author": "Samuel Joseph-Myrtil",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Samolo972/le-plus-probable/issues"
+  },
+  "homepage": "https://github.com/Samolo972/le-plus-probable#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  }
+}

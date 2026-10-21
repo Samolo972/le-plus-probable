@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E1645">
+<meta name="description" content="Qui de vous est le plus susceptible de… ? Le jeu à jouer entre collègues depuis son téléphone.">
+<title>Le Plus Probable</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="netbar" id="netbar" role="status" hidden>Reconnexion…</div>
+
+<!-- 1 · Accueil -->
+<main class="screen home" id="s-home" hidden>
+  <div class="brand">
+    <div class="logo" aria-hidden="true">?</div>
+    <h1>Le Plus<br>Probable</h1>
+    <p>Qui de vous est le plus susceptible de…&nbsp;?<br>Votez, riez, assumez.</p>
+  </div>
+
+  <form class="fields" id="home-form" novalidate>
+    <div class="field">
+      <label for="code">Code de la salle</label>
+      <input class="input code" id="code" name="code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD" inputmode="text">
+    </div>
+    <div class="field">
+      <label for="pseudo">Ton pseudo</label>
+      <input class="input" id="pseudo" name="pseudo" maxlength="16" autocomplete="nickname" placeholder="Ex : Samuel" enterkeyhint="go">
+    </div>
+    <p class="error" id="home-error" role="alert"></p>
+  </form>
+
+  <div class="bottom">
+    <button class="btn" id="btn-join" type="button">Rejoindre la partie</button>
+    <button class="btn ghost" id="btn-create" type="button">Créer une partie</button>
+    <p class="note" id="home-host"></p>
+  </div>
+</main>
+
+<!-- 2 · Salle d'attente -->
+<main class="screen gap-lg" id="s-lobby" hidden>
+  <div class="row-between">
+    <button class="icon-btn" id="btn-leave" type="button" aria-label="Quitter la partie">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="label">Salle d'attente</span>
+    <button class="icon-btn" id="btn-settings" type="button" aria-label="Paramètres de la partie">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+    </button>
+    <span class="icon-spacer" id="settings-spacer" aria-hidden="true"></span>
+  </div>
+
+  <div class="share">
+    <img class="qr" id="lobby-qr" alt="QR code pour rejoindre la salle" width="104" height="104">
+    <div class="share-text">
+      <small>Code à partager</small>
+      <span class="big-code" id="lobby-code"></span>
+      <small>Scanne ou tape le code</small>
+    </div>
+  </div>
+
+  <div class="row-between baseline">
+    <h2 class="h2">Joueurs</h2>
+    <span class="label mint" id="lobby-count"></span>
+  </div>
+  <div class="list" id="lobby-players"></div>
+
+  <div class="bottom">
+    <button class="btn" id="btn-start" type="button">Lancer la partie</button>
+    <div class="waiting" id="lobby-wait">En attente de l'hôte…</div>
+    <p class="note" id="lobby-summary"></p>
+    <a class="link-btn" id="lobby-tv" target="_blank" rel="noopener">Afficher la partie sur un grand écran</a>
+  </div>
+</main>
+
+<!-- Paramètres (hôte) -->
+<main class="screen gap-lg" id="s-settings" hidden>
+  <div class="row-between">
+    <button class="icon-btn" id="btn-settings-back" type="button" aria-label="Retour à la salle">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="label">Paramètres de la partie</span>
+    <span class="icon-spacer" aria-hidden="true"></span>
+  </div>
+
+  <div class="hard-card" id="hard-card">
+    <div class="head">
+      <div class="badge">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF7A59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 3 3 5"/></svg>
+      </div>
+      <div class="title">
+        <strong>Mode Hard</strong>
+        <span id="hard-tag">Désactivé</span>
+      </div>
+      <button class="switch hard" id="sw-hard" type="button" role="switch" aria-checked="false" aria-label="Activer le mode Hard"></button>
+    </div>
+    <p>Questions plus piquantes, et partie sans limite : on enchaîne jusqu'à ce que l'hôte arrête. Toujours du second degré entre collègues.</p>
+  </div>
+
+  <div class="group">
+    <span class="label" id="lbl-count">Nombre de questions</span>
+    <div class="unlimited" id="count-unlimited">Illimité (mode Hard)</div>
+    <div class="pills" id="pills-count" role="group" aria-labelledby="lbl-count"></div>
+  </div>
+
+  <div class="group">
+    <span class="label" id="lbl-timer">Temps pour voter</span>
+    <div class="pills" id="pills-timer" role="group" aria-labelledby="lbl-timer"></div>
+  </div>
+
+  <div class="group">
+    <span class="label" id="lbl-themes">Thèmes des questions</span>
+    <div class="chips" id="chips-themes" role="group" aria-labelledby="lbl-themes"></div>
+    <p class="error" id="themes-error" role="alert"></p>
+  </div>
+
+  <div class="group">
+    <span class="label">Options</span>
+    <div class="list" id="options"></div>
+  </div>
+
+  <div class="bottom">
+    <button class="btn" id="btn-save" type="button">Enregistrer</button>
+    <p class="note">Seul l'hôte voit cet écran</p>
+  </div>
+</main>
+
+<!-- 3 · Questions des joueurs -->
+<main class="screen" id="s-questions" hidden>
+  <div class="row-between">
+    <span class="label">Avant de commencer</span>
+    <span class="label mint" id="q-ready"></span>
+  </div>
+
+  <div class="group tight">
+    <h1 class="h1">À toi de piéger tes collègues</h1>
+    <p class="lead">Propose jusqu'à 2 questions. Elles seront mélangées anonymement avec celles du jeu.</p>
+  </div>
+
+  <div class="compose">
+    <label for="q-input">Qui est le plus susceptible de…</label>
+    <textarea id="q-input" rows="3" maxlength="120" placeholder="…oublier son badge 3 fois dans la semaine ?"></textarea>
+    <span class="counter" id="q-counter">0 / 120</span>
+    <button class="add" id="btn-q-add" type="button" disabled>Ajouter ma question</button>
+  </div>
+
+  <div class="list">
+    <span class="label" id="q-mine-label">Tes questions (0/2)</span>
+    <div class="list" id="q-mine"></div>
+  </div>
+
+  <div class="bottom">
+    <button class="btn" id="btn-ready" type="button">Je suis prêt</button>
+    <p class="note">La partie démarre quand tout le monde est prêt</p>
+    <button class="link-btn" id="btn-force-start" type="button">Lancer sans attendre</button>
+  </div>
+</main>
+
+<!-- 4 · Vote -->
+<main class="screen" id="s-vote" hidden>
+  <div class="timer">
+    <div class="row-between">
+      <span class="label" id="v-round"></span>
+      <span class="clock" id="v-clock">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>
+        <span id="v-seconds"></span>
+      </span>
+    </div>
+    <div class="bar" id="v-bar"><div></div></div>
+  </div>
+
+  <div class="qcard">
+    <span class="prefix">Qui est le plus susceptible de…</span>
+    <p class="q" id="v-question"></p>
+    <span class="from" id="v-from" hidden>Question proposée par un joueur</span>
+  </div>
+
+  <span class="label" id="v-hint">Choisis un collègue</span>
+  <div class="tiles" id="v-tiles"></div>
+
+  <div class="bottom">
+    <button class="btn" id="btn-vote" type="button"></button>
+    <div class="waiting" id="v-done" hidden>A voté ! On attend les autres…</div>
+    <p class="note" id="v-status"></p>
+    <button class="link-btn" id="btn-reveal-now" type="button">Révéler maintenant</button>
+  </div>
+</main>
+
+<!-- 5 · Résultats + réactions -->
+<main class="screen" id="s-results" hidden>
+  <div class="row-between">
+    <span class="label" id="r-round"></span>
+    <span class="label mint" id="r-total"></span>
+  </div>
+
+  <p class="lead" id="r-phrase"></p>
+
+  <div class="stage" id="r-stage">
+    <div class="suspense" id="r-suspense">
+      <strong>Et c'est…</strong>
+      <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+    <div class="winner" id="r-winner" hidden aria-live="polite">
+      <div class="faces" id="r-faces"></div>
+      <span class="wname" id="r-name"></span>
+      <span class="wline" id="r-line"></span>
+    </div>
+    <div class="bubbles" id="r-bubbles" aria-hidden="true"></div>
+  </div>
+
+  <div class="list gap12 mt8">
+    <span class="label">Détail des votes</span>
+    <div class="list gap12" id="r-rows"></div>
+  </div>
+
+  <div class="group">
+    <span class="label">Réagis en direct</span>
+    <div class="reactions" id="r-reactions"></div>
+  </div>
+
+  <div class="bottom">
+    <button class="btn" id="btn-next" type="button">Question suivante</button>
+    <button class="link-btn" id="btn-end" type="button">Terminer la partie et voir le podium</button>
+    <div class="waiting" id="r-wait">L'hôte lance la question suivante…</div>
+  </div>
+</main>
+
+<!-- 6 · Podium & stats -->
+<main class="screen podium" id="s-podium" hidden>
+  <div class="center-head">
+    <span class="label" id="p-sub"></span>
+    <h1>Le podium des titres</h1>
+  </div>
+
+  <div class="steps" id="p-steps"></div>
+  <div class="list gap8" id="p-others"></div>
+
+  <div class="group">
+    <span class="label">Stats rigolotes</span>
+    <div class="stats" id="p-stats"></div>
+  </div>
+
+  <details class="recap" id="p-recap" hidden>
+    <summary>Qui a voté pour qui</summary>
+    <ol id="p-recap-list"></ol>
+  </details>
+
+  <div class="bottom">
+    <button class="btn small-text" id="btn-replay" type="button">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E1645" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      Rejouer avec les mêmes joueurs
+    </button>
+    <div class="waiting" id="p-wait">L'hôte peut relancer une partie avec les mêmes joueurs</div>
+    <button class="btn ghost" id="btn-new" type="button">Nouvelle partie</button>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="alert" hidden></div>
+
+<script src="/socket.io/socket.io.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/fx.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+node_modules/
+data/*.db
+data/*.db-*
+backups/
+logs/
+.env
+
+# configuration propre au serveur, gardée hors du dépôt public
+deploy/
+ecosystem.config.js

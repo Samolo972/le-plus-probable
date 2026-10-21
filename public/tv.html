@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1E1645">
+<title>Grand écran – Le Plus Probable</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="netbar" id="netbar" role="status" hidden>Reconnexion…</div>
+
+<div class="tv">
+  <header class="tv-head">
+    <div class="logo" aria-hidden="true">?</div>
+    <span class="brandname">Le Plus Probable</span>
+    <div class="grow"></div>
+    <button class="tv-sound" id="tv-sound" type="button">Activer le son</button>
+    <div class="tv-join">
+      <span id="tv-url"></span>
+      <b id="tv-code"></b>
+    </div>
+  </header>
+
+  <main class="tv-body" id="tv-body" aria-live="polite"></main>
+  <div class="bubbles" id="tv-bubbles" aria-hidden="true"></div>
+</div>
+
+<script src="/socket.io/socket.io.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/fx.js"></script>
+<script src="/js/tv.js"></script>
+</body>
+</html>
